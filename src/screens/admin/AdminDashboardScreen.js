@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, ScrollView, Pressable, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, Pressable, StyleSheet, Modal } from 'react-native';
 import { colors, spacing, typography, radius } from '../../theme/theme';
 import { useAuth } from '../../context/AuthContext';
 
@@ -23,23 +23,7 @@ const RECENT_USERS = [
   { id: '4', name: 'Maya Gurung', role: 'Seller', status: 'Active' },
 ];
 
-export default function AdminDashboardScreen({ navigation }) {
-  const { user, logout } = useAuth();
-  const [pendingListings, setPendingListings] = useState(INITIAL_PENDING);
-
-  function handleLogout() {
-    logout();
-  }
-
-  function approveListing(id) {
-    setPendingListings((prev) => prev.filter((l) => l.id !== id));
-  }
-
-  function rejectListing(id) {
-    setPendingListings((prev) => prev.filter((l) => l.id !== id));
-  }
-
-  const QUICK_ACTIONS = [
+const QUICK_ACTIONS = [
   { label: 'Manage Users', icon: '👥', screen: 'AdminUsers' },
   { label: 'View Reports', icon: '📊', screen: 'AdminReports' },
   { label: 'Moderate Listings', icon: '📋', screen: 'AdminListings' },
@@ -50,6 +34,45 @@ export default function AdminDashboardScreen({ navigation }) {
   { label: 'Analytics', icon: '📈', screen: 'AdminReports' },
 ];
 
+export default function AdminDashboardScreen({ navigation }) {
+  const { user, logout } = useAuth();
+  const [pendingListings, setPendingListings] = useState(INITIAL_PENDING);
+  const [menuVisible, setMenuVisible] = useState(false);
+
+  function approveListing(id) {
+    setPendingListings((prev) => prev.filter((l) => l.id !== id));
+  }
+
+  function rejectListing(id) {
+    setPendingListings((prev) => prev.filter((l) => l.id !== id));
+  }
+
+  function handleLogout() {
+    setMenuVisible(false);
+    logout();
+  }
+
+  function goToEditProfile() {
+    setMenuVisible(false);
+    navigation.navigate('AdminEditProfile');
+  }
+
+  function goToSettings() {
+    setMenuVisible(false);
+    navigation.navigate('AdminSettings');
+  }
+
+  const adminName = user?.name || 'Admin';
+  const adminEmail = user?.email || 'admin@smartthrift.com';
+  const initials = adminName
+    .trim()
+    .split(' ')
+    .filter(Boolean)
+    .map((w) => w[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
+
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
       <View style={styles.header}>
@@ -57,17 +80,68 @@ export default function AdminDashboardScreen({ navigation }) {
           <Text style={[typography.caption, { color: colors.textSecondary }]}>ADMIN PANEL</Text>
           <Text style={[typography.subheading, { color: colors.primary }]}>Smart Thrift</Text>
         </View>
-        <Pressable style={styles.logoutBtn} onPress={handleLogout}>
-          <Text style={{ color: colors.danger, fontWeight: '700' }}>Logout</Text>
+
+        <Pressable style={styles.profilePill} onPress={() => setMenuVisible(true)}>
+          <View style={styles.profileAvatar}>
+            <Text style={styles.profileInitials}>{initials}</Text>
+          </View>
+          <Text style={[typography.caption, { fontWeight: '700', marginLeft: spacing.xs }]}>
+            {adminName}
+          </Text>
+          <Text style={{ marginLeft: spacing.xs, color: colors.textSecondary, fontSize: 10 }}>▼</Text>
         </Pressable>
       </View>
+
+      <Modal
+        visible={menuVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setMenuVisible(false)}
+      >
+        <Pressable style={styles.overlay} onPress={() => setMenuVisible(false)}>
+          <View style={styles.dropdown}>
+            <View style={styles.dropdownHeader}>
+              <View style={styles.dropdownAvatar}>
+                <Text style={styles.profileInitials}>{initials}</Text>
+              </View>
+              <View style={{ marginLeft: spacing.sm, flex: 1 }}>
+                <Text style={typography.subheading}>{adminName}</Text>
+                <Text style={[typography.caption, { color: colors.textSecondary }]} numberOfLines={1}>
+                  {adminEmail}
+                </Text>
+              </View>
+            </View>
+
+            <View style={styles.divider} />
+
+            <Pressable style={styles.menuItem} onPress={goToEditProfile}>
+              <Text style={styles.menuIcon}>👤</Text>
+              <Text style={typography.body}>Edit Profile</Text>
+            </Pressable>
+
+            <Pressable style={styles.menuItem} onPress={goToSettings}>
+              <Text style={styles.menuIcon}>⚙</Text>
+              <Text style={typography.body}>Settings</Text>
+            </Pressable>
+
+            <View style={styles.divider} />
+
+            <Pressable style={styles.menuItem} onPress={handleLogout}>
+              <Text style={styles.menuIcon}>🚪</Text>
+              <Text style={[typography.body, { color: colors.danger, fontWeight: '700' }]}>
+                Logout
+              </Text>
+            </Pressable>
+          </View>
+        </Pressable>
+      </Modal>
 
       <ScrollView
         contentContainerStyle={{ padding: spacing.md, paddingBottom: spacing.xl * 2 }}
         showsVerticalScrollIndicator={false}
       >
         <Text style={[typography.heading, { marginBottom: spacing.md }]}>
-          {'Welcome, ' + (user?.name || 'Admin')}
+          {'Welcome, ' + adminName}
         </Text>
 
         <View style={styles.statsGrid}>
@@ -138,8 +212,22 @@ export default function AdminDashboardScreen({ navigation }) {
               <Text style={typography.subheading}>{u.name}</Text>
               <Text style={[typography.caption, { color: colors.textSecondary }]}>{u.role}</Text>
             </View>
-            <View style={[styles.statusBadge, { backgroundColor: u.status === 'Active' ? colors.accentGreen + '22' : colors.amber + '22' }]}>
-              <Text style={{ color: u.status === 'Active' ? colors.accentGreen : colors.amber, fontSize: 11, fontWeight: '700' }}>
+            <View
+              style={[
+                styles.statusBadge,
+                {
+                  backgroundColor:
+                    u.status === 'Active' ? colors.accentGreen + '22' : colors.amber + '22',
+                },
+              ]}
+            >
+              <Text
+                style={{
+                  color: u.status === 'Active' ? colors.accentGreen : colors.amber,
+                  fontSize: 11,
+                  fontWeight: '700',
+                }}
+              >
                 {u.status}
               </Text>
             </View>
@@ -169,16 +257,135 @@ export default function AdminDashboardScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: spacing.md, borderBottomWidth: 1, borderBottomColor: colors.border },
-  logoutBtn: { borderWidth: 1, borderColor: colors.danger, borderRadius: radius.pill, paddingHorizontal: spacing.md, paddingVertical: spacing.xs },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  profilePill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.surface,
+    borderRadius: radius.pill,
+    paddingVertical: spacing.xs,
+    paddingHorizontal: spacing.sm,
+  },
+  profileAvatar: {
+    width: 28,
+    height: 28,
+    borderRadius: 999,
+    backgroundColor: colors.primaryTeal,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  profileInitials: {
+    color: '#FFFFFF',
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.25)',
+  },
+  dropdown: {
+    position: 'absolute',
+    top: 70,
+    right: spacing.md,
+    width: 240,
+    backgroundColor: colors.surface,
+    borderRadius: radius.md,
+    paddingVertical: spacing.sm,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  dropdownHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+  },
+  dropdownAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 999,
+    backgroundColor: colors.primaryTeal,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  divider: {
+    height: 1,
+    backgroundColor: colors.border,
+    marginVertical: spacing.xs,
+  },
+  menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+  },
+  menuIcon: {
+    fontSize: 16,
+    marginRight: spacing.sm,
+    width: 20,
+    textAlign: 'center',
+  },
   statsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
-  statCard: { width: '47%', backgroundColor: colors.surface, borderRadius: radius.md, padding: spacing.md, borderLeftWidth: 4 },
-  listingCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, borderRadius: radius.md, padding: spacing.md, marginBottom: spacing.sm },
-  approveBtn: { backgroundColor: colors.accentGreen, borderRadius: radius.sm, paddingHorizontal: spacing.sm, paddingVertical: spacing.xs },
-  rejectBtn: { backgroundColor: colors.danger, borderRadius: radius.sm, paddingHorizontal: spacing.sm, paddingVertical: spacing.xs },
-  userCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, borderRadius: radius.md, padding: spacing.md, marginBottom: spacing.sm },
-  userAvatar: { width: 44, height: 44, borderRadius: 999, backgroundColor: colors.background, justifyContent: 'center', alignItems: 'center' },
+  statCard: {
+    width: '47%',
+    backgroundColor: colors.surface,
+    borderRadius: radius.md,
+    padding: spacing.md,
+    borderLeftWidth: 4,
+  },
+  listingCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.surface,
+    borderRadius: radius.md,
+    padding: spacing.md,
+    marginBottom: spacing.sm,
+  },
+  approveBtn: {
+    backgroundColor: colors.accentGreen,
+    borderRadius: radius.sm,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+  },
+  rejectBtn: {
+    backgroundColor: colors.danger,
+    borderRadius: radius.sm,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+  },
+  userCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.surface,
+    borderRadius: radius.md,
+    padding: spacing.md,
+    marginBottom: spacing.sm,
+  },
+  userAvatar: {
+    width: 44,
+    height: 44,
+    borderRadius: 999,
+    backgroundColor: colors.background,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   statusBadge: { paddingHorizontal: spacing.sm, paddingVertical: 3, borderRadius: radius.pill },
   actionsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
-  actionBtn: { width: '47%', backgroundColor: colors.surface, borderRadius: radius.md, padding: spacing.md, alignItems: 'center' },
+  actionBtn: {
+    width: '47%',
+    backgroundColor: colors.surface,
+    borderRadius: radius.md,
+    padding: spacing.md,
+    alignItems: 'center',
+  },
 });
