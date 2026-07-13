@@ -114,9 +114,11 @@ export default function SellerLoginScreen({ navigation }) {
           <Text style={[typography.caption, { color: colors.textSecondary }]}>
             New to SMARTTHRIFT?{' '}
           </Text>
-          <TouchableOpacity onPress={() => navigation.navigate('SellerRegister')}>
+          {/* FIX: pass role: 'seller' so SignUpScreen (reused for this route)
+              knows to register the account as a seller, not a buyer. */}
+          <TouchableOpacity onPress={() => navigation.navigate('SellerRegister', { role: 'seller' })}>
             <Text style={[typography.caption, { color: colors.primaryTeal, fontWeight: '700' }]}>
-              Register as a Seller
+              Sign Up
             </Text>
           </TouchableOpacity>
         </View>

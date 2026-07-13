@@ -28,6 +28,8 @@ export default function SellerSettingsScreen({ navigation }) {
     { label: 'Privacy Policy', sub: 'Seller data policies', icon: '🛡', onPress: () => navigation.navigate('Privacy') },
     { label: 'Terms & Conditions', sub: 'Seller agreement', icon: '📄', onPress: () => navigation.navigate('Terms') },
     { label: 'Help & Support', sub: 'Get help with your shop', icon: '❓', onPress: () => navigation.navigate('Help') },
+    { label: 'Customer Reviews', sub: 'See what buyers say about you', icon: '⭐', onPress: () => navigation.navigate('SellerReviews') },
+{ label: 'Help & Support', sub: 'Seller guides and FAQs', icon: '❓', onPress: () => navigation.navigate('SellerHelp') },
   ];
 
   const TOGGLES = [

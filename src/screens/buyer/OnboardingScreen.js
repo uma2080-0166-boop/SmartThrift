@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import { View, Text, FlatList, Pressable, StyleSheet, Dimensions } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, spacing, typography, radius } from '../../theme/theme';
 
 const { width } = Dimensions.get('window');
@@ -39,6 +40,13 @@ export default function OnboardingScreen({ navigation }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const flatListRef = useRef(null);
 
+  // FIX: read the device's safe-area insets so we can pad the bottom button
+  // area by the correct amount on every device (gesture-nav devices, 3-button
+  // nav devices, notches, etc). Previously the button used a fixed
+  // `spacing.lg` padding which isn't enough on many Android devices, causing
+  // the "Next" button to render underneath/overlapping the system nav bar.
+  const insets = useSafeAreaInsets();
+
   function handleNext() {
     if (currentIndex < SLIDES.length - 1) {
       flatListRef.current?.scrollToIndex({ index: currentIndex + 1 });
@@ -54,7 +62,7 @@ export default function OnboardingScreen({ navigation }) {
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
-      <View style={{ flexDirection: 'row', justifyContent: 'flex-end', padding: spacing.lg }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'flex-end', padding: spacing.lg, paddingTop: spacing.lg + insets.top }}>
         <Pressable onPress={handleSkip}>
           <Text style={[typography.body, { color: colors.textSecondary }]}>Skip</Text>
         </Pressable>
@@ -99,7 +107,10 @@ export default function OnboardingScreen({ navigation }) {
         ))}
       </View>
 
-      <View style={{ padding: spacing.lg }}>
+      {/* FIX: bottom padding now includes insets.bottom (safe area) on top
+          of the usual spacing.lg, so the button always sits fully above the
+          system navigation bar / home indicator, on any device. */}
+      <View style={{ paddingHorizontal: spacing.lg, paddingTop: spacing.lg, paddingBottom: spacing.lg + insets.bottom }}>
         <Pressable
           style={[styles.nextBtn, { backgroundColor: SLIDES[currentIndex].color }]}
           onPress={handleNext}

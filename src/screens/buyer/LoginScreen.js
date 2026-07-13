@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, Pressable } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, Pressable, ScrollView } from 'react-native';
 import { colors, spacing, radius, typography } from '../../theme/theme';
 import { useAuth } from '../../context/AuthContext';
 
@@ -34,7 +34,11 @@ export default function LoginScreen({ navigation }) {
   return (
     <View style={styles.page}>
       <View style={styles.hero} />
-      <View style={styles.card}>
+      <ScrollView
+        style={styles.card}
+        contentContainerStyle={{ paddingBottom: spacing.xl * 2 }}
+        showsVerticalScrollIndicator={false}
+      >
         <Pressable
           onPress={() => navigation.navigate('Welcome')}
           style={{ flexDirection: 'row', alignItems: 'center', marginBottom: spacing.md }}
@@ -104,7 +108,7 @@ export default function LoginScreen({ navigation }) {
           <Text style={{ fontWeight: '600', color: colors.textPrimary }}>Continue with Google</Text>
         </TouchableOpacity>
 
-        <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: spacing.lg }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: spacing.lg, marginBottom: spacing.md }}>
           <Text style={[typography.caption, { color: colors.textSecondary }]}>
             Don't have an account?{' '}
           </Text>
@@ -114,15 +118,15 @@ export default function LoginScreen({ navigation }) {
             </Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   page: { flex: 1, backgroundColor: '#E8F5E9' },
-  hero: { flex: 1 },
-  card: { backgroundColor: colors.background, borderTopLeftRadius: radius.lg, borderTopRightRadius: radius.lg, padding: spacing.lg, paddingBottom: spacing.xl },
+  hero: { height: 120 },
+  card: { flex: 1, backgroundColor: colors.background, borderTopLeftRadius: radius.lg, borderTopRightRadius: radius.lg, padding: spacing.lg },
   avatarCircle: { width: 60, height: 60, borderRadius: 999, backgroundColor: colors.mintIcon, justifyContent: 'center', alignItems: 'center', alignSelf: 'center' },
   label: { fontSize: 11, fontWeight: '700', color: colors.textSecondary, letterSpacing: 1, marginBottom: spacing.xs },
   inputRow: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, borderRadius: radius.sm, padding: spacing.md },

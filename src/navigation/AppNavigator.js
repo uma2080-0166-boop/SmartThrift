@@ -8,7 +8,6 @@ import SignUpScreen from '../screens/buyer/SignUpScreen';
 import SellerLoginScreen from '../screens/seller/SellerLoginScreen';
 import AdminLoginScreen from '../screens/admin/AdminLoginScreen';
 import StylePreferenceScreen from '../screens/buyer/StylePreferenceScreen';
-import UpdateStylePreferenceScreen from '../screens/buyer/UpdateStylePreferenceScreen';
 import AddressScreen from '../screens/buyer/AddressScreen';
 import ProductReviewsScreen from '../screens/buyer/ProductReviewsScreen';
 import OrderHistoryScreen from '../screens/buyer/OrderHistoryScreen';
@@ -43,6 +42,8 @@ import SellerOrdersScreen from '../screens/seller/SellerOrdersScreen';
 import SellerSettingsScreen from '../screens/seller/SellerSettingsScreen';
 import SellerAnalyticsScreen from '../screens/seller/SellerAnalyticsScreen';
 import SellerAddressScreen from '../screens/seller/SellerAddressScreen';
+import SellerReviewsScreen from '../screens/seller/SellerReviewsScreen';
+import SellerHelpScreen from '../screens/seller/SellerHelpScreen';
 
 import AdminDashboardScreen from '../screens/admin/AdminDashboardScreen';
 import AdminUsersScreen from '../screens/admin/AdminUsersScreen';
@@ -51,6 +52,8 @@ import AdminReportsScreen from '../screens/admin/AdminReportsScreen';
 import AdminNotificationsScreen from '../screens/admin/AdminNotificationsScreen';
 import AdminSettingsScreen from '../screens/admin/AdminSettingsScreen';
 import AdminProfileScreen from '../screens/admin/AdminProfileScreen';
+import AdminTransactionsScreen from '../screens/admin/AdminTransactionsScreen';
+import AdminSupportScreen from '../screens/admin/AdminSupportScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -65,6 +68,7 @@ function AuthScreens() {
       <Stack.Screen name="Login"          component={LoginScreen} />
       <Stack.Screen name="SignUp"         component={SignUpScreen} />
       <Stack.Screen name="Register"       component={SignUpScreen} />
+      <Stack.Screen name="SellerRegister" component={SignUpScreen} />
       <Stack.Screen name="SellerLogin"    component={SellerLoginScreen} />
       <Stack.Screen name="AdminLogin"     component={AdminLoginScreen} />
       <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
@@ -105,7 +109,7 @@ function BuyerScreens() {
       <Stack.Screen name="ChangePassword"        component={ChangePasswordScreen} />
       <Stack.Screen name="Privacy"               component={PrivacyScreen} />
       <Stack.Screen name="Terms"                 component={TermsScreen} />
-      <Stack.Screen name="UpdateStylePreference" component={UpdateStylePreferenceScreen} />
+      <Stack.Screen name="StylePreference"       component={StylePreferenceScreen} />
     </Stack.Navigator>
   );
 }
@@ -133,6 +137,8 @@ function SellerScreens() {
       <Stack.Screen name="EditProfile"      component={EditProfileScreen} />
       <Stack.Screen name="OrderHistory"     component={OrderHistoryScreen} />
       <Stack.Screen name="Address"          component={AddressScreen} />
+      <Stack.Screen name="SellerReviews" component={SellerReviewsScreen} />
+<Stack.Screen name="SellerHelp" component={SellerHelpScreen} />
     </Stack.Navigator>
   );
 }
@@ -150,6 +156,8 @@ function AdminScreens() {
       <Stack.Screen name="ChangePassword"     component={ChangePasswordScreen} />
       <Stack.Screen name="ForgotPassword"     component={ForgotPasswordScreen} />
       <Stack.Screen name="AdminProfile"       component={AdminProfileScreen} />
+      <Stack.Screen name="AdminTransactions" component={AdminTransactionsScreen} />
+<Stack.Screen name="AdminSupport" component={AdminSupportScreen} />
     </Stack.Navigator>
   );
 }
@@ -157,16 +165,27 @@ function AdminScreens() {
 export default function AppNavigator() {
   const { user, isLoggedIn, isNewUser } = useAuth();
 
+  // Each app "mode" gets a distinct key so Android's native-stack navigator
+  // fully unmounts the old screen and mounts a fresh one when the mode
+  // changes, instead of failing to visually update.
+  function getNavigatorKey() {
+    if (!isLoggedIn) return 'auth';
+    if (user?.role === 'seller') return 'seller';
+    if (user?.role === 'admin') return 'admin';
+    if (isNewUser) return 'onboarding';
+    return 'buyer';
+  }
+
   function renderScreens() {
     if (!isLoggedIn)             return <AuthScreens />;
     if (user?.role === 'seller') return <SellerScreens />;
     if (user?.role === 'admin')  return <AdminScreens />;
-    if (isNewUser)               return <OnboardingScreens />;
+    if (isNewUser)                return <OnboardingScreens />;
     return <BuyerScreens />;
   }
 
   return (
-    <NavigationContainer>
+    <NavigationContainer key={getNavigatorKey()}>
       {renderScreens()}
     </NavigationContainer>
   );

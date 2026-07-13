@@ -40,13 +40,15 @@ export default function AdminDashboardScreen({ navigation }) {
   }
 
   const QUICK_ACTIONS = [
-    { label: 'Manage Users', icon: '👥', screen: 'AdminUsers' },
-    { label: 'View Reports', icon: '📊', screen: 'AdminReports' },
-    { label: 'Moderate Listings', icon: '📋', screen: 'AdminListings' },
-    { label: 'Send Notification', icon: '🔔', screen: 'AdminNotifications' },
-    { label: 'Settings', icon: '⚙', screen: 'AdminSettings' },
-    { label: 'Analytics', icon: '📈', screen: 'AdminReports' },
-  ];
+  { label: 'Manage Users', icon: '👥', screen: 'AdminUsers' },
+  { label: 'View Reports', icon: '📊', screen: 'AdminReports' },
+  { label: 'Moderate Listings', icon: '📋', screen: 'AdminListings' },
+  { label: 'Send Notification', icon: '🔔', screen: 'AdminNotifications' },
+  { label: 'Transactions', icon: '💳', screen: 'AdminTransactions' },
+  { label: 'Support Tickets', icon: '🎫', screen: 'AdminSupport' },
+  { label: 'Settings', icon: '⚙', screen: 'AdminSettings' },
+  { label: 'Analytics', icon: '📈', screen: 'AdminReports' },
+];
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>

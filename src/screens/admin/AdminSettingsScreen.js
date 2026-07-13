@@ -43,6 +43,8 @@ export default function AdminSettingsScreen({ navigation }) {
     { label: 'Backup Data', sub: 'Export platform data', icon: '💾', action: () => Alert.alert('Backup', 'Last backup: Jun 24, 2026 12:00 AM\nNext scheduled: Jun 25, 2026\n\nManual backup initiated!') },
     { label: 'API Settings', sub: 'Manage API keys and webhooks', icon: '⚙', action: () => Alert.alert('API Settings', 'eSewa API: Connected\nKhalti API: Connected\nSMS Gateway: Active\nEmail Service: Active') },
     { label: 'Change Password', sub: 'Update admin credentials', icon: '🔒', screen: 'ChangePassword' },
+    { label: 'Transactions', sub: 'All payment transactions', icon: '💳', screen: 'AdminTransactions' },
+{ label: 'Support Tickets', sub: 'User support requests', icon: '🎫', screen: 'AdminSupport' },
   ];
 
   const PLATFORM_TOGGLES = [

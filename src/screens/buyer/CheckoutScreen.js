@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { View, Text, ScrollView, Pressable, StyleSheet, TextInput, Alert } from 'react-native';
 import { colors, spacing, typography, radius } from '../../theme/theme';
 import { useCart } from '../../context/CartContext';
+import { useAuth } from '../../context/AuthContext';
 import BackHeader from '../../components/composite/BackHeader';
 
 const PAYMENT_METHODS = [
@@ -23,10 +24,11 @@ const PAYMENT_METHODS = [
 
 export default function CheckoutScreen({ navigation }) {
   const { items, totalPrice, clearCart } = useCart();
+  const { user } = useAuth();
   const [selectedPayment, setSelectedPayment] = useState('1');
   const [address, setAddress]   = useState('');
   const [phone, setPhone]       = useState('');
-  const [name, setName]         = useState('');
+  const [name, setName]         = useState(user?.name || '');
   const [esewaId, setEsewaId]   = useState('');
 
   function handlePlaceOrder() {
@@ -70,7 +72,7 @@ export default function CheckoutScreen({ navigation }) {
           style={styles.input}
           value={name}
           onChangeText={setName}
-          placeholder="Ramesh Thapa"
+          placeholder="Enter your full name"
           placeholderTextColor={colors.textSecondary}
         />
 

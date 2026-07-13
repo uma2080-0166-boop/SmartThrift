@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, Pressable, StyleSheet, Image } from 'react-native';
+import { View, Text, ScrollView, Pressable, StyleSheet } from 'react-native';
 import { colors, spacing, typography, radius } from '../../theme/theme';
 
 export default function ListingPublishedScreen({ route, navigation }) {
@@ -6,11 +6,6 @@ export default function ListingPublishedScreen({ route, navigation }) {
   const title = listing?.title || 'Your Item';
   const price = listing?.price || 0;
   const condition = listing?.condition || 'Good';
-  const image = listing?.image || null;
-
-  const imgSource = image
-    ? (typeof image === 'string' ? { uri: image } : image)
-    : require('../../../assets/item1.jpg');
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
@@ -39,11 +34,10 @@ export default function ListingPublishedScreen({ route, navigation }) {
               PREDICTED HIGH DEMAND
             </Text>
           </View>
-          <Image source={imgSource} style={styles.previewImage} />
-          <Text style={[typography.subheading, { marginTop: spacing.md }]}>{title}</Text>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <Text style={{ color: colors.accentGreen, fontWeight: '700' }}>
-              {'NPR ' + price + '.00'}
+          <Text style={typography.subheading}>{title}</Text>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: spacing.xs }}>
+            <Text style={{ color: colors.accentGreen, fontWeight: '700', fontSize: 18 }}>
+              {'NPR ' + Number(price).toLocaleString()}
             </Text>
             <Text style={[typography.caption, { color: colors.textSecondary }]}>
               {'Condition: ' + condition}
@@ -105,7 +99,6 @@ const styles = StyleSheet.create({
   successCircle: { width: 80, height: 80, borderRadius: 999, backgroundColor: colors.accentGreen, justifyContent: 'center', alignItems: 'center' },
   previewCard: { width: '100%', backgroundColor: colors.surface, borderRadius: radius.md, padding: spacing.md, marginTop: spacing.lg },
   demandBadge: { backgroundColor: colors.accentGreen, alignSelf: 'flex-start', paddingHorizontal: spacing.sm, paddingVertical: 3, borderRadius: radius.pill, marginBottom: spacing.sm },
-  previewImage: { width: '100%', height: 200, borderRadius: radius.md },
   insightRow: { flexDirection: 'row', alignItems: 'flex-start', backgroundColor: colors.surface, borderRadius: radius.md, padding: spacing.md, marginTop: spacing.md, width: '100%' },
   badgeRow: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFF9E6', borderRadius: radius.md, padding: spacing.md, marginTop: spacing.md, width: '100%' },
   viewBtn: { borderWidth: 1, borderColor: colors.primary, borderRadius: radius.md, padding: spacing.md, alignItems: 'center', marginTop: spacing.lg, width: '100%' },

@@ -67,7 +67,7 @@ export default function HomeFeedScreen({ navigation }) {
         <View style={{ flexDirection: 'row', gap: spacing.md, alignItems: 'center' }}>
           {/* Edit style preferences button */}
           <TouchableOpacity
-            onPress={() => navigation.navigate('UpdateStylePreference')}
+            onPress={() => navigation.navigate('StylePreference', { editing: true })}
             style={styles.editStyleBtn}
           >
             <Text style={{ fontSize: 14 }}>🎨</Text>
@@ -185,15 +185,30 @@ export default function HomeFeedScreen({ navigation }) {
             : mockItems
           ).slice(0, 4).map((item) => {
             const imgSource = typeof item.imageUrl === 'number' ? item.imageUrl : { uri: item.imageUrl };
+            const isSold = item.sold === true || item.available === false;
             return (
               <Pressable
                 key={item.id}
-                onPress={() => navigation.navigate('ProductDetail', { item })}
+                onPress={() => !isSold && navigation.navigate('ProductDetail', { item })}
                 style={styles.horizontalCard}
+                disabled={isSold}
               >
                 <View style={styles.horizontalImageWrap}>
-                  <Image source={imgSource} style={styles.horizontalImage} resizeMode="cover" />
-                  {item.demand === 'high' && (
+                  <Image
+                    source={imgSource}
+                    style={[styles.horizontalImage, isSold && { opacity: 0.4 }]}
+                    resizeMode="cover"
+                  />
+                  {isSold ? (
+                    <View style={styles.soldBadge}>
+                      <Text style={styles.soldBadgeText}>SOLD OUT</Text>
+                    </View>
+                  ) : (
+                    <View style={styles.availableBadge}>
+                      <Text style={styles.availableBadgeText}>Available</Text>
+                    </View>
+                  )}
+                  {!isSold && item.demand === 'high' && (
                     <View style={styles.demandBadge}>
                       <Text style={styles.demandBadgeText}>High Demand</Text>
                     </View>
@@ -231,15 +246,30 @@ export default function HomeFeedScreen({ navigation }) {
           <View style={styles.verticalGrid}>
             {filteredItems.map((item) => {
               const imgSource = typeof item.imageUrl === 'number' ? item.imageUrl : { uri: item.imageUrl };
+              const isSold = item.sold === true || item.available === false;
               return (
                 <Pressable
                   key={item.id}
-                  onPress={() => navigation.navigate('ProductDetail', { item })}
+                  onPress={() => !isSold && navigation.navigate('ProductDetail', { item })}
                   style={styles.gridCard}
+                  disabled={isSold}
                 >
                   <View style={styles.gridImageWrap}>
-                    <Image source={imgSource} style={styles.gridImage} resizeMode="cover" />
-                    {item.demand === 'high' && (
+                    <Image
+                      source={imgSource}
+                      style={[styles.gridImage, isSold && { opacity: 0.4 }]}
+                      resizeMode="cover"
+                    />
+                    {isSold ? (
+                      <View style={styles.soldBadge}>
+                        <Text style={styles.soldBadgeText}>SOLD OUT</Text>
+                      </View>
+                    ) : (
+                      <View style={styles.availableBadge}>
+                        <Text style={styles.availableBadgeText}>Available</Text>
+                      </View>
+                    )}
+                    {!isSold && item.demand === 'high' && (
                       <View style={styles.demandBadge}>
                         <Text style={styles.demandBadgeText}>High Demand</Text>
                       </View>
@@ -312,6 +342,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xs, paddingVertical: 2, borderRadius: radius.pill,
   },
   demandBadgeText: { color: '#FFFFFF', fontSize: 9, fontWeight: '700' },
+  soldBadge: {
+    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.45)',
+    justifyContent: 'center', alignItems: 'center',
+  },
+  soldBadgeText: {
+    color: '#FFFFFF', fontSize: 13, fontWeight: '800', letterSpacing: 1,
+    borderWidth: 1.5, borderColor: '#FFFFFF',
+    paddingHorizontal: spacing.sm, paddingVertical: 3, borderRadius: radius.sm,
+  },
+  availableBadge: {
+    position: 'absolute', bottom: spacing.xs, right: spacing.xs,
+    backgroundColor: colors.accentGreen,
+    paddingHorizontal: spacing.xs, paddingVertical: 2, borderRadius: radius.pill,
+  },
+  availableBadgeText: { color: '#FFFFFF', fontSize: 9, fontWeight: '700' },
   verticalGrid:  { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
   gridCard:      { width: '47%' },
   gridImageWrap: { width: '100%', aspectRatio: 0.85, borderRadius: radius.md, overflow: 'hidden' },
