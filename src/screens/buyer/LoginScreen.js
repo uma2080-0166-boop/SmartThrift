@@ -52,7 +52,7 @@ export default function LoginScreen({ navigation }) {
         </View>
 
         <Text style={[typography.heading, { textAlign: 'center', marginTop: spacing.md }]}>
-          Welcome Back
+          Welcome 
         </Text>
         <Text style={[typography.body, { color: colors.textSecondary, textAlign: 'center', marginTop: spacing.xs, marginBottom: spacing.lg }]}>
           Sign in to your ethical marketplace account
