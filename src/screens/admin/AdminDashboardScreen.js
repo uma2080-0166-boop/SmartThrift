@@ -76,21 +76,19 @@ export default function AdminDashboardScreen({ navigation }) {
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
       <View style={styles.header}>
-        <View>
-          <Text style={[typography.caption, { color: colors.textSecondary }]}>ADMIN PANEL</Text>
-          <Text style={[typography.subheading, { color: colors.primary }]}>Smart Thrift</Text>
-        </View>
-
-        <Pressable style={styles.profilePill} onPress={() => setMenuVisible(true)}>
-          <View style={styles.profileAvatar}>
-            <Text style={styles.profileInitials}>{initials}</Text>
-          </View>
-          <Text style={[typography.caption, { fontWeight: '700', marginLeft: spacing.xs }]}>
-            {adminName}
-          </Text>
-          <Text style={{ marginLeft: spacing.xs, color: colors.textSecondary, fontSize: 10 }}>▼</Text>
-        </Pressable>
-      </View>
+  <View>
+    <Text style={[typography.caption, { color: colors.textSecondary }]}>ADMIN PANEL</Text>
+    <Text style={[typography.subheading, { color: colors.primary }]}>Smart Thrift</Text>
+  </View>
+  <View style={{ flexDirection: 'row', gap: spacing.md, alignItems: 'center' }}>
+    <Pressable onPress={() => navigation.navigate('AdminProfile')}>
+      <Text style={{ fontSize: 22 }}>👤</Text>
+    </Pressable>
+    <Pressable style={styles.logoutBtn} onPress={handleLogout}>
+      <Text style={{ color: colors.danger, fontWeight: '700' }}>Logout</Text>
+    </Pressable>
+  </View>
+</View>
 
       <Modal
         visible={menuVisible}
